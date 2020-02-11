@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { Button, Table } from "react-bootstrap"
+import { Button, Table } from "react-bootstrap";
 
 class Users extends React.Component {
 

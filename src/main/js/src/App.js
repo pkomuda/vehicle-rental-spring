@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Home from "./Home";
 import Users from "./Users";
 import NotFound from "./NotFound";
+import Layout from "./components/Layout";
+import Sidebar from "./components/Sidebar";
+import Jumbotron from "./components/Jumbotron";
 
 class App extends React.Component {
 
@@ -10,11 +13,15 @@ class App extends React.Component {
         return (
             <React.Fragment>
                 <Router>
+                    <Sidebar/>
+                    <Jumbotron/>
+                    <Layout>
                     <Switch>
                         <Route exact path="/" component={Home}/>
                         <Route path="/users" component={Users}/>
                         <Route component={NotFound}/>
                     </Switch>
+                    </Layout>
                 </Router>
             </React.Fragment>
         )
