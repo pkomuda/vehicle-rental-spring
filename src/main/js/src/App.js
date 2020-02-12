@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Home from "./Home";
 import Users from "./Users";
 import NotFound from "./NotFound";
-import Layout from "./components/Layout";
 import Sidebar from "./components/Sidebar";
 import Jumbotron from "./components/Jumbotron";
+import Layout from "./components/Layout";
 
 class App extends React.Component {
 
