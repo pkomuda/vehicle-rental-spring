@@ -16,11 +16,11 @@ class App extends React.Component {
                     <Sidebar/>
                     <Jumbotron/>
                     <Layout>
-                    <Switch>
-                        <Route exact path="/" component={Home}/>
-                        <Route path="/users" component={Users}/>
-                        <Route component={NotFound}/>
-                    </Switch>
+                        <Switch>
+                            <Route exact path="/" component={Home}/>
+                            <Route path="/users" component={Users}/>
+                            <Route component={NotFound}/>
+                        </Switch>
                     </Layout>
                 </Router>
             </React.Fragment>

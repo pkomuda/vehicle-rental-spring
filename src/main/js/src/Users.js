@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
-import { Button, Table } from "react-bootstrap";
+import { Button, Table, Dropdown } from "react-bootstrap";
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
 
 class Users extends React.Component {
 

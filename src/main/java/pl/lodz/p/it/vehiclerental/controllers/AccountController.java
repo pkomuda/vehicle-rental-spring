@@ -1,13 +1,14 @@
 package pl.lodz.p.it.vehiclerental.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.vehiclerental.model.Account;
 import pl.lodz.p.it.vehiclerental.repositories.AccountRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class AccountController {
@@ -17,31 +18,90 @@ public class AccountController {
 
     @PostMapping("/api/account")
     @Transactional
-    public void addAccount(@RequestBody Account account) {
-        accountRepository.insert(account);
+    public ResponseEntity<String> addAccount(@RequestBody Account account) {
+        if (accountRepository.findById(account.getLogin()).isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("User with login: " + account.getLogin() + " already exists.");
+        } else if (accountRepository.findByEmail(account.getEmail()).isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("User with email: " + account.getEmail() + " already exists.");
+        } else {
+            accountRepository.insert(account);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("User with login: " + account.getLogin() + " added successfully.");
+        }
     }
 
     @GetMapping("/api/account/{login}")
     @Transactional
-    public Optional<Account> getAccount(@PathVariable String login) {
-        return accountRepository.findById(login);
+    public ResponseEntity<?> getAccount(@PathVariable String login) {
+        if (accountRepository.findById(login).isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(accountRepository.findById(login));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("User with login: " + login + " not found.");
+        }
     }
 
     @GetMapping("/api/accounts")
     @Transactional
-    public List<Account> getAccounts() {
-        return accountRepository.findAll();
+    public ResponseEntity<List<Account>> getAccounts() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountRepository.findAll());
     }
 
     @PutMapping("/api/account/{login}")
     @Transactional
-    public void updateAccount(@PathVariable String login, @RequestBody Account account) {
-        accountRepository.save(account);
+    public ResponseEntity<String> updateAccount(@PathVariable String login, @RequestBody Account account) {
+        if (accountRepository.findById(login).isPresent()) {
+            if (!accountRepository.findById(login).get().getLogin().equals(account.getLogin())) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("Cannot change user login.");
+            } else if (!accountRepository.findById(login).get().getEmail().equals(account.getEmail())) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("Cannot change user email.");
+            } else {
+                accountRepository.save(account);
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body("User with login: " + login + " updated successfully.");
+            }
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("User with login: " + login + " not found.");
+        }
     }
 
     @DeleteMapping("/api/account/{login}")
     @Transactional
-    public void deleteAccount(@PathVariable String login) {
-        accountRepository.deleteById(login);
+    public ResponseEntity<String> deleteAccount(@PathVariable String login) {
+        if (accountRepository.findById(login).isPresent()) {
+            accountRepository.deleteById(login);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("User with login: " + login + " deleted successfully.");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("User with login: " + login + " not found.");
+        }
+    }
+
+    @GetMapping("/api/accounts/number")
+    @Transactional
+    public ResponseEntity<String> getAccountsNumber() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(String.valueOf(accountRepository.findAll().size()));
     }
 }

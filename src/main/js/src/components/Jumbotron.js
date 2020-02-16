@@ -8,7 +8,6 @@ class Jumbotron extends React.Component {
         return (
             <Jumbo fluid className="jumbo">
                 <div className="overlay"/>
-                <h1 className="header">Vehicle Rental</h1>
             </Jumbo>
         )
     }
