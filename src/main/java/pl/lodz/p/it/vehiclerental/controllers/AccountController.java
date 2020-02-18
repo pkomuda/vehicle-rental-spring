@@ -5,10 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import pl.lodz.p.it.vehiclerental.StringUtils;
 import pl.lodz.p.it.vehiclerental.model.Account;
 import pl.lodz.p.it.vehiclerental.repositories.AccountRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class AccountController {
@@ -97,11 +99,18 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/api/accounts/number")
+    @GetMapping("/api/accounts/{filter}")
     @Transactional
-    public ResponseEntity<String> getAccountsNumber() {
+    public ResponseEntity<List<Account>> filterAccounts(@PathVariable String filter) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(String.valueOf(accountRepository.findAll().size()));
+                .body(accountRepository
+                        .findAll()
+                        .stream()
+                        .filter(account -> StringUtils.containsIgnoreCase(account.getLogin(), filter)
+                        || StringUtils.containsIgnoreCase(account.getEmail(), filter)
+                        || StringUtils.containsIgnoreCase(account.getFirstName(), filter)
+                        || StringUtils.containsIgnoreCase(account.getLastName(), filter))
+                        .collect(Collectors.toList()));
     }
 }

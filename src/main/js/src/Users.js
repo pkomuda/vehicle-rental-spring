@@ -1,51 +1,70 @@
 import React from "react";
 import axios from "axios";
-import { Button, Table, Dropdown } from "react-bootstrap";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
+import { Button, FormControl } from "react-bootstrap";
+import Table from "./components/Table"
 
 class Users extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {users: []};
+        this.state = {
+            users: [],
+            columns: [],
+            loaded: false
+        };
     }
 
     componentDidMount() {
         axios.get("/api/accounts")
             .then(response => {
-                this.setState({users: response.data})
+                this.setState({
+                    users: response.data,
+                    columns: [{
+                        dataField: "login",
+                        text: 'Username',
+                        sort: true
+                    }, {
+                        dataField: "email",
+                        text: "Email address",
+                        sort: true
+                    }, {
+                        dataField: "firstName",
+                        text: "First name",
+                        sort: true
+                    }, {
+                        dataField: "lastName",
+                        text: "Last name",
+                        sort: true
+                    }],
+                    loaded: true
+                });
+            });
+    }
+
+    handleSearch(value) {
+        axios.get("/api/accounts/" + value)
+            .then(response => {
+                this.setState({users: response.data});
             });
     }
 
     renderTable() {
-        let rows = [];
-        for (let i = 0; i < this.state.users.length; i++) {
-            rows.push(
-                <tr key={i}>
-                    <td>{i}</td>
-                    <td>{this.state.users[i]["login"]}</td>
-                </tr>
+        let table = [];
+        if (this.state.loaded) {
+            table.push(
+                <Table keyField="login" data={this.state.users} columns={this.state.columns}/>
             );
         }
-        return rows;
+        return table;
     }
 
     render() {
         return (
             <div>
                 <h1>Users</h1>
-                <Table bordered hover>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Username</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.renderTable()}
-                    </tbody>
-                </Table>
+                <FormControl placeholder="Search" id="searchBar" onChange={() => this.handleSearch(document.getElementById("searchBar").value)}/>
+                <hr/>
+                {this.renderTable()}
                 <Button onClick={this.props.history.goBack}>Back</Button>
             </div>
         )
