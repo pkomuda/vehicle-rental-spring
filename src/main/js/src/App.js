@@ -1,29 +1,29 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Home from "./Home";
-import Users from "./Users";
-import NotFound from "./NotFound";
+import { Container } from "react-bootstrap";
 import Sidebar from "./components/Sidebar";
 import Jumbotron from "./components/Jumbotron";
-import Layout from "./components/Layout";
+import Home from "./Home";
+import ListUsers from "./ListUsers";
+import EditUser from "./EditUser";
+import NotFound from "./NotFound";
 
 class App extends React.Component {
 
     render() {
         return (
-            <React.Fragment>
-                <Router>
-                    <Sidebar/>
-                    <Jumbotron/>
-                    <Layout>
-                        <Switch>
-                            <Route exact path="/" component={Home}/>
-                            <Route path="/users" component={Users}/>
-                            <Route component={NotFound}/>
-                        </Switch>
-                    </Layout>
-                </Router>
-            </React.Fragment>
+            <Router>
+                <Sidebar/>
+                <Jumbotron/>
+                <Container>
+                    <Switch>
+                        <Route exact path="/" component={Home}/>
+                        <Route path="/listusers" component={ListUsers}/>
+                        <Route path="/edituser/:id" component={EditUser}/>
+                        <Route component={NotFound}/>
+                    </Switch>
+                </Container>
+            </Router>
         )
     }
 }

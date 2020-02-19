@@ -5,3 +5,7 @@ th {
     -ms-user-select: none;
     user-select: none;
 }
+
+.react-bootstrap-table table {
+    table-layout: auto;
+}

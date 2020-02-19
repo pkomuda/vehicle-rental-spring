@@ -33,8 +33,8 @@ class Sidebar extends React.Component {
 
     handleUsers = (event) => {
         event.preventDefault();
-        if (this.props.location.pathname !== "/users") {
-            this.props.history.push("/users");
+        if (this.props.location.pathname !== "/listusers") {
+            this.props.history.push("/listusers");
         }
         this.closeMenu();
     };

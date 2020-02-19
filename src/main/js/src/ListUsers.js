@@ -3,7 +3,7 @@ import axios from "axios";
 import { Button, FormControl } from "react-bootstrap";
 import Table from "./components/Table"
 
-class Users extends React.Component {
+class ListUsers extends React.Component {
 
     constructor(props) {
         super(props);
@@ -13,6 +13,32 @@ class Users extends React.Component {
             loaded: false
         };
     }
+
+    editButtonFormatter = (cell, row) => {
+        const handleEdit = (login) => {
+            this.props.history.push("/edituser/" + login);
+        };
+        return <Button onClick={() => handleEdit(row["login"])}>Edit</Button>;
+    };
+
+    deleteButtonFormatter = (cell, row) => {
+        const handleDelete = (login) => {
+            if (window.confirm("Do you really want to delete user: " + login + "?")) {
+                axios.delete("/api/account/" + login)
+                    .then(response => {
+                        if (response.status !== 200) {
+                            alert(response.body);
+                        } else {
+                            axios.get("/api/accounts")
+                                .then(response => {
+                                    this.setState({users: response.data});
+                                });
+                        }
+                    });
+            }
+        };
+        return <Button onClick={() => handleDelete(row["login"])}>Delete</Button>;
+    };
 
     componentDidMount() {
         axios.get("/api/accounts")
@@ -35,6 +61,16 @@ class Users extends React.Component {
                         dataField: "lastName",
                         text: "Last name",
                         sort: true
+                    }, {
+                        dataField: "edit",
+                        text: "Edit",
+                        isDummyField: true,
+                        formatter: this.editButtonFormatter
+                    }, {
+                        dataField: "delete",
+                        text: "Delete",
+                        isDummyField: true,
+                        formatter: this.deleteButtonFormatter
                     }],
                     loaded: true
                 });
@@ -49,13 +85,9 @@ class Users extends React.Component {
     }
 
     renderTable() {
-        let table = [];
         if (this.state.loaded) {
-            table.push(
-                <Table keyField="login" data={this.state.users} columns={this.state.columns}/>
-            );
+            return <Table keyField="login" data={this.state.users} columns={this.state.columns}/>;
         }
-        return table;
     }
 
     render() {
@@ -71,4 +103,4 @@ class Users extends React.Component {
     }
 }
 
-export default Users;
+export default ListUsers;
