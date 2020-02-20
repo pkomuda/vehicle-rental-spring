@@ -26,14 +26,13 @@ class ListUsers extends React.Component {
             if (window.confirm("Do you really want to delete user: " + login + "?")) {
                 axios.delete("/api/account/" + login)
                     .then(response => {
-                        if (response.status !== 200) {
-                            alert(response.body);
-                        } else {
-                            axios.get("/api/accounts")
-                                .then(response => {
-                                    this.setState({users: response.data});
-                                });
-                        }
+                        alert(response.data);
+                        axios.get("/api/accounts")
+                            .then(response => {
+                                this.setState({users: response.data});
+                            });
+                    }).catch(error => {
+                        alert(error.response.data);
                     });
             }
         };
@@ -84,9 +83,18 @@ class ListUsers extends React.Component {
             });
     }
 
+    handleAdd() {
+        this.props.history.push("/adduser");
+    }
+
     renderTable() {
         if (this.state.loaded) {
-            return <Table keyField="login" data={this.state.users} columns={this.state.columns}/>;
+            return (
+                <div>
+                    <Table keyField="login" data={this.state.users} columns={this.state.columns}/>
+                    <Button onClick={() => this.handleAdd()}>Add User</Button>
+                </div>
+            );
         }
     }
 
@@ -97,7 +105,7 @@ class ListUsers extends React.Component {
                 <FormControl placeholder="Search" id="searchBar" onChange={() => this.handleSearch(document.getElementById("searchBar").value)}/>
                 <hr/>
                 {this.renderTable()}
-                <Button onClick={this.props.history.goBack}>Back</Button>
+                <Button style={{marginTop: "1em"}} onClick={this.props.history.goBack}>Back</Button>
             </div>
         )
     }

@@ -12,6 +12,7 @@ public @Data class Account {
 
     @Id
     private String login;
+    private char[] password;
     private String email;
     private String firstName;
     private String lastName;

@@ -1,18 +1,11 @@
-.header {
-    position: absolute;
-    margin-top: 5vw;
-    margin-left: 77.5vw;
-    cursor: pointer;
-}
-
 .bm-burger-button {
     position: absolute;
     width: 36px;
     height: 30px;
     left: 36px;
     top: 36px;
-    margin-top: 3vw;
-    margin-left: 3vw;
+    margin-top: 48px;
+    margin-left: 48px;
 }
 
 .bm-burger-bars {

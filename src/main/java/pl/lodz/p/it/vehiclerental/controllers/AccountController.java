@@ -61,15 +61,19 @@ public class AccountController {
     @Transactional
     public ResponseEntity<String> updateAccount(@PathVariable String login, @RequestBody Account account) {
         if (accountRepository.findById(login).isPresent()) {
-            if (!accountRepository.findById(login).get().getLogin().equals(account.getLogin())) {
+            if (!login.equals(account.getLogin()) && accountRepository.findById(account.getLogin()).isPresent()) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
-                        .body("Cannot change user login.");
-            } else if (!accountRepository.findById(login).get().getEmail().equals(account.getEmail())) {
+                        .body("User with login: " + account.getLogin() + " already exists.");
+            } else if (accountRepository.findByEmail(account.getEmail()).isPresent()
+                    && !accountRepository.findById(login).get().getEmail().equals(account.getEmail())) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
-                        .body("Cannot change user email.");
+                        .body("User with email: " + account.getEmail() + " already exists.");
             } else {
+                if (!login.equals(account.getLogin())) {
+                    accountRepository.deleteById(login);
+                }
                 accountRepository.save(account);
                 return ResponseEntity
                         .status(HttpStatus.OK)
