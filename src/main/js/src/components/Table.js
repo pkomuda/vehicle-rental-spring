@@ -16,13 +16,13 @@ class Table extends React.Component {
         };
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps = (props, state) => {
         if (props.data !== state.data) {
             return {data: props.data};
         } else {
             return null;
         }
-    }
+    };
 
     render() {
         const sizes = [{
@@ -33,8 +33,6 @@ class Table extends React.Component {
             text: "50", value: 50
         }, {
             text: "100", value: 100
-        }, {
-            text: "All", value: this.state.data.length
         }];
         return <BootstrapTable keyField={this.state.keyField} data={this.state.data} columns={this.state.columns} pagination={paginationFactory({sizePerPageList: sizes})} bootstrap4={true}/>;
     }

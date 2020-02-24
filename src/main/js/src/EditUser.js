@@ -12,7 +12,7 @@ class EditUser extends React.Component {
         };
     }
 
-    componentDidMount() {
+    componentDidMount = () => {
         axios.get("/api/account/" + this.props.match.params.id)
             .then(response => {
                 this.setState({
@@ -23,7 +23,7 @@ class EditUser extends React.Component {
                 alert(error.response.data);
                 this.props.history.goBack();
             });
-    }
+    };
 
     handleChangeUsername = (event) => {
         let tempUser = {...this.state.user};
@@ -59,7 +59,7 @@ class EditUser extends React.Component {
             });
     };
 
-    renderForm() {
+    renderForm = () => {
         if (this.state.loaded) {
             if (this.state.user !== {}) {
                 return (
@@ -80,10 +80,10 @@ class EditUser extends React.Component {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>First name</FormLabel>
+                            <FormLabel>Last name</FormLabel>
                             <FormControl value={this.state.user["lastName"]} onChange={this.handleChangeLastName}/>
                         </FormGroup>
-
+                        <hr/>
                         <Button onClick={this.handleSubmit}>Submit</Button>
                     </Form>
                 );
@@ -91,12 +91,13 @@ class EditUser extends React.Component {
                 return <h2>{"User with login: " + this.props.match.params.id + " not found"}</h2>
             }
         }
-    }
+    };
 
     render() {
         return (
             <div>
                 <h1>Edit user</h1>
+                <hr/>
                 {this.renderForm()}
                 <Button style={{marginTop: "1em"}} onClick={this.props.history.goBack}>Back</Button>
             </div>

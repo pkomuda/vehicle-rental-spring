@@ -10,13 +10,13 @@ class Sidebar extends React.Component {
         this.state = {menuOpen: false};
     }
 
-    handleStateChange(state) {
+    handleStateChange = (state) => {
         this.setState({menuOpen: state.isOpen});
-    }
+    };
 
-    closeMenu() {
+    closeMenu = () => {
         this.setState({menuOpen: false})
-    }
+    };
 
     handleHome = (event) => {
         event.preventDefault();

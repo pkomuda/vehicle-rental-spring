@@ -26,7 +26,6 @@ class ListUsers extends React.Component {
             if (window.confirm("Do you really want to delete user: " + login + "?")) {
                 axios.delete("/api/account/" + login)
                     .then(response => {
-                        alert(response.data);
                         axios.get("/api/accounts")
                             .then(response => {
                                 this.setState({users: response.data});
@@ -39,7 +38,7 @@ class ListUsers extends React.Component {
         return <Button onClick={() => handleDelete(row["login"])}>Delete</Button>;
     };
 
-    componentDidMount() {
+    componentDidMount = () => {
         axios.get("/api/accounts")
             .then(response => {
                 this.setState({
@@ -74,29 +73,30 @@ class ListUsers extends React.Component {
                     loaded: true
                 });
             });
-    }
+    };
 
-    handleSearch(value) {
+    handleSearch = (value) => {
         axios.get("/api/accounts/" + value)
             .then(response => {
                 this.setState({users: response.data});
             });
-    }
+    };
 
-    handleAdd() {
+    handleAdd = () => {
         this.props.history.push("/adduser");
-    }
+    };
 
-    renderTable() {
+    renderTable = () => {
         if (this.state.loaded) {
             return (
                 <div>
                     <Table keyField="login" data={this.state.users} columns={this.state.columns}/>
+                    <hr/>
                     <Button onClick={() => this.handleAdd()}>Add User</Button>
                 </div>
             );
         }
-    }
+    };
 
     render() {
         return (

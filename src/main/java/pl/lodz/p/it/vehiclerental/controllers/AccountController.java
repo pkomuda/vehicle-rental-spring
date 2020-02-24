@@ -13,8 +13,12 @@ import java.util.List;
 @RestController
 public class AccountController {
 
-    @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    public AccountController(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 
     @PostMapping("/api/account")
     @Transactional
