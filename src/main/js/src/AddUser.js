@@ -8,10 +8,9 @@ class AddUser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: {"login": "", "email": "", "firstName": "", "lastName": ""},
+            user: {"login": "", "email": "", "firstName": "", "lastName": "", "active": true},
             password: "",
             permissions: {"CLIENT": true, "MANAGER": false, "ADMIN": false},
-            active: true,
             valid: {"login": true, "password": true, "email": true, "firstName": true, "lastName": true}
         };
         this.emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -48,6 +47,12 @@ class AddUser extends React.Component {
         this.validateProperty(property);
     };
 
+    handleChangeActivity = () => {
+        let tempUser = {...this.state.user};
+        tempUser["active"] = !this.state.user["active"];
+        this.setState({user: tempUser});
+    };
+
     handleChangePassword = (event) => {
         this.setState({password: event.target.value});
         this.validateProperty("password");
@@ -57,10 +62,6 @@ class AddUser extends React.Component {
         let tempPermissions = {...this.state.permissions};
         tempPermissions[access] = !this.state.permissions[access];
         this.setState({permissions: tempPermissions});
-    };
-
-    handleChangeActivity = () => {
-        this.setState({active: !this.state.active});
     };
 
     checkValidation = () => {
@@ -102,7 +103,6 @@ class AddUser extends React.Component {
             let tempUser = {...this.state.user};
             tempUser["password"] = bcrypt.hashSync(this.state.password, 12);
             tempUser["permissions"] = tempPermissions;
-            tempUser["active"] = this.state.active;
             axios.post("/api/account", tempUser)
                 .then(response => {
                     alert(response.data);
@@ -166,8 +166,8 @@ class AddUser extends React.Component {
                         <FormLabel>Activity</FormLabel>
                         <div>
                             <ToggleButtonGroup name="activity" defaultValue="active" type="radio">
-                                <ToggleButton value="active" variant="outline-primary" checked={this.state.active} onChange={this.handleChangeActivity}>Active</ToggleButton>
-                                <ToggleButton value="inactive" variant="outline-primary" checked={!this.state.active} onChange={this.handleChangeActivity}>Inactive</ToggleButton>
+                                <ToggleButton value="active" variant="outline-primary" checked={this.state.user["active"]} onChange={this.handleChangeActivity}>Active</ToggleButton>
+                                <ToggleButton value="inactive" variant="outline-primary" checked={!this.state.user["active"]} onChange={this.handleChangeActivity}>Inactive</ToggleButton>
                             </ToggleButtonGroup>
                         </div>
                     </FormGroup>
