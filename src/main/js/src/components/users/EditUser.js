@@ -1,8 +1,7 @@
 import React from "react";
 import axios from "axios";
-import bcrypt from "bcryptjs";
 import { Form, FormControl, FormGroup, FormLabel, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
-import CenterButton from "./components/CenterButton";
+import CenterButton from "../utils/CenterButton";
 
 class EditUser extends React.Component {
 
@@ -10,7 +9,6 @@ class EditUser extends React.Component {
         super(props);
         this.state = {
             user: {},
-            password: "",
             permissions: {"CLIENT": false, "MANAGER": false, "ADMIN": false},
             valid: {"login": true, "password": true, "email": true, "firstName": true, "lastName": true},
             loaded: false
@@ -25,8 +23,10 @@ class EditUser extends React.Component {
                 for (let value of response.data["permissions"]) {
                     tempPermissions[value] = true;
                 }
+                let tempUser = response.data;
+                tempUser["password"] = "";
                 this.setState({
-                    user: response.data,
+                    user: tempUser,
                     permissions: tempPermissions,
                     loaded: true
                 });
@@ -67,21 +67,16 @@ class EditUser extends React.Component {
         this.validateProperty(property);
     };
 
-    handleChangeActivity = () => {
-        let tempUser = {...this.state.user};
-        tempUser["active"] = !this.state.user["active"];
-        this.setState({user: tempUser});
-    };
-
-    handleChangePassword = (event) => {
-        this.setState({password: event.target.value});
-        this.validateProperty("password");
-    };
-
     handleChangePermissions = (access) => {
         let tempPermissions = {...this.state.permissions};
         tempPermissions[access] = !this.state.permissions[access];
         this.setState({permissions: tempPermissions});
+    };
+
+    handleChangeActivity = () => {
+        let tempUser = {...this.state.user};
+        tempUser["active"] = !this.state.user["active"];
+        this.setState({user: tempUser});
     };
 
     checkValidation = () => {
@@ -121,7 +116,6 @@ class EditUser extends React.Component {
         }
         if (formValidated && permissionsValidated) {
             let tempUser = {...this.state.user};
-            tempUser["password"] = bcrypt.hashSync(this.state.password, 12);
             tempUser["permissions"] = tempPermissions;
             axios.put("/api/account/" + this.props.match.params.id, this.state.user)
                 .then(response => {
@@ -155,7 +149,7 @@ class EditUser extends React.Component {
 
                         <FormGroup>
                             <FormLabel>Password</FormLabel>
-                            <FormControl id="password" value={this.state.password} onChange={this.handleChangePassword} type="password" isInvalid={!this.state.valid["password"]}/>
+                            <FormControl id="password" value={this.state.user["password"]} onChange={(event) => this.handleChangeProperty(event, "password")} isInvalid={!this.state.valid["password"]} type="password"/>
                             <FormControl.Feedback type="invalid">Password must be at least 8 characters long.</FormControl.Feedback>
                         </FormGroup>
 

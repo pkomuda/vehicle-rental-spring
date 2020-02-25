@@ -1,5 +1,5 @@
 import React from "react";
-import CenterButton from "./components/CenterButton";
+import CenterButton from "../utils/CenterButton";
 
 class NotFound extends React.Component {
 

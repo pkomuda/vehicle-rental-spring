@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental;
+package pl.lodz.p.it.vehiclerental.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;

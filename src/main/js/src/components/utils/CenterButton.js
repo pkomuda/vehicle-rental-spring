@@ -15,7 +15,7 @@ class CenterButton extends React.Component {
     render() {
         return (
             <div className="parent">
-                <Button className="child" style={this.isBackButton()} onClick={this.props.onClick}>{this.props.text}</Button>
+                <Button style={this.isBackButton()} onClick={this.props.onClick}>{this.props.text}</Button>
             </div>
         )
     }

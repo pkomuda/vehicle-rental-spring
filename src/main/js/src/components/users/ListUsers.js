@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
 import { Button, FormControl } from "react-bootstrap";
-import Table from "./components/Table"
-import CenterButton from "./components/CenterButton";
+import Table from "../utils/Table"
+import CenterButton from "../utils/CenterButton";
 
 class ListUsers extends React.Component {
 

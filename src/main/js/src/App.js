@@ -1,15 +1,15 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Container } from "react-bootstrap";
-import Sidebar from "./components/Sidebar";
-import Jumbotron from "./components/Jumbotron";
-import Home from "./Home";
-import Login from "./Login";
-import Register from "./Register";
-import ListUsers from "./ListUsers";
-import AddUser from "./AddUser";
-import EditUser from "./EditUser";
-import NotFound from "./NotFound";
+import Sidebar from "./components/utils/Sidebar";
+import Jumbotron from "./components/utils/Jumbotron";
+import Home from "./components/main/Home";
+import Login from "./components/main/Login";
+import Register from "./components/main/Register";
+import ListUsers from "./components/users/ListUsers";
+import AddUser from "./components/users/AddUser";
+import EditUser from "./components/users/EditUser";
+import NotFound from "./components/main/NotFound";
 
 class App extends React.Component {
 

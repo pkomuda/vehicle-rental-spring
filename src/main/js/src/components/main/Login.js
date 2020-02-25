@@ -1,16 +1,14 @@
 import React from "react";
 import axios from "axios";
-import bcrypt from "bcryptjs";
 import { Form, FormControl, FormGroup, FormLabel } from "react-bootstrap";
-import CenterButton from "./components/CenterButton";
+import CenterButton from "../utils/CenterButton";
 
 class Login extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            login: "",
-            password: "",
+            user: {"login": "", "password": ""},
             valid: {"login": true, "password": true}
         };
     }
@@ -30,14 +28,11 @@ class Login extends React.Component {
         this.setState({valid: tempValid});
     };
 
-    handleChangeLogin = (event) => {
-        this.setState({login: event.target.value});
-        this.validateProperty("login");
-    };
-
-    handleChangePassword = (event) => {
-        this.setState({password: event.target.value});
-        this.validateProperty("password");
+    handleChangeProperty = (event, property) => {
+        let tempUser = {...this.state.user};
+        tempUser[property] = event.target.value;
+        this.setState({user: tempUser});
+        this.validateProperty(property);
     };
 
     checkValidation = () => {
@@ -57,15 +52,7 @@ class Login extends React.Component {
 
     handleSubmit = () => {
         if (this.checkValidation()) {
-            let user = {"login": this.state.login, "password": bcrypt.hashSync(this.state.password, 12)};
-            console.log(user);
-            // //TODO
-            // axios.post("/api/login", user)
-            //     .then(response => {
-            //         this.props.history.push("/");
-            //     }).catch(error => {
-            //         alert(error.response.data);
-            // });
+            console.log(this.state.user);
         } else {
             alert("Please fill out every field in the form.");
         }
@@ -79,13 +66,13 @@ class Login extends React.Component {
                 <Form>
                     <FormGroup>
                         <FormLabel>Username</FormLabel>
-                        <FormControl id="login" value={this.state.login} onChange={this.handleChangeLogin} isInvalid={!this.state.valid["login"]}/>
+                        <FormControl id="login" value={this.state.user["login"]} onChange={(event) => this.handleChangeProperty(event, "login")} isInvalid={!this.state.valid["login"]}/>
                         <FormControl.Feedback id="control" type="invalid">Please provide a username.</FormControl.Feedback>
                     </FormGroup>
 
                     <FormGroup>
                         <FormLabel>Password</FormLabel>
-                        <FormControl id="password" value={this.state.password} onChange={this.handleChangePassword} type="password" isInvalid={!this.state.valid["password"]}/>
+                        <FormControl id="password" value={this.state.user["password"]} onChange={(event) => this.handleChangeProperty(event, "password")} isInvalid={!this.state.valid["password"]} type="password"/>
                         <FormControl.Feedback type="invalid">Password must be at least 8 characters long.</FormControl.Feedback>
                     </FormGroup>
                     <hr/>
