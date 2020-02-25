@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { Button, FormControl } from "react-bootstrap";
 import Table from "./components/Table"
+import CenterButton from "./components/CenterButton";
 
 class ListUsers extends React.Component {
 
@@ -92,7 +93,7 @@ class ListUsers extends React.Component {
                 <div>
                     <Table keyField="login" data={this.state.users} columns={this.state.columns}/>
                     <hr/>
-                    <Button onClick={() => this.handleAdd()}>Add User</Button>
+                    <CenterButton onClick={this.handleAdd} text="Add User"/>
                 </div>
             );
         }
@@ -105,7 +106,7 @@ class ListUsers extends React.Component {
                 <FormControl placeholder="Search" id="searchBar" onChange={() => this.handleSearch(document.getElementById("searchBar").value)}/>
                 <hr/>
                 {this.renderTable()}
-                <Button style={{marginTop: "1em"}} onClick={this.props.history.goBack}>Back</Button>
+                <CenterButton back onClick={this.props.history.goBack} text="Back"/>
             </div>
         )
     }

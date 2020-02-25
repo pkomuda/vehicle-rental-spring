@@ -10,35 +10,29 @@ class Sidebar extends React.Component {
         this.state = {menuOpen: false};
     }
 
-    handleStateChange = (state) => {
-        this.setState({menuOpen: state.isOpen});
-    };
-
     closeMenu = () => {
         this.setState({menuOpen: false})
     };
 
-    handleHome = (event) => {
-        event.preventDefault();
-        if (this.props.location.pathname !== "/") {
-            this.props.history.push("/");
-        }
-        this.closeMenu();
+    handleStateChange = (state) => {
+        this.setState({menuOpen: state.isOpen});
     };
 
-    handleUsers = (event) => {
+    handleRedirect = (event, page) => {
         event.preventDefault();
-        if (this.props.location.pathname !== "/listusers") {
-            this.props.history.push("/listusers");
+        if (this.props.location.pathname !== "/" + page) {
+            this.props.history.push("/" + page);
         }
         this.closeMenu();
     };
 
     render () {
         return (
-            <Menu isOpen={this.state.menuOpen} onStateChange={(state) => this.handleStateChange(state)}>
-                <a onClick={this.handleHome} className="menu-item" href="/">Home</a>
-                <a onClick={this.handleUsers} className="menu-item" href="/">Users</a>
+            <Menu isOpen={this.state.menuOpen} onStateChange={this.handleStateChange}>
+                <a onClick={(event) => this.handleRedirect(event, "")} className="menu-item" href="/">Home</a>
+                <a onClick={(event) => this.handleRedirect(event, "login")} className="menu-item" href="/">Login</a>
+                <a onClick={(event) => this.handleRedirect(event, "register")} className="menu-item" href="/">Register</a>
+                <a onClick={(event) => this.handleRedirect(event, "listusers")} className="menu-item" href="/">Users</a>
             </Menu>
         );
     }

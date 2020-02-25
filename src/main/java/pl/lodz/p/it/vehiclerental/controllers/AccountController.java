@@ -105,15 +105,11 @@ public class AccountController {
         }
     }
 
-    @Transactional
-    List<Account> findAllBy(String filter) {
-        return accountRepository.findAllByLoginContainsIgnoreCaseOrEmailContainsIgnoreCaseOrFirstNameContainsIgnoreCaseOrLastNameContainsIgnoreCase(filter, filter, filter, filter);
-    }
-
     @GetMapping("/api/accounts/{filter}")
+    @Transactional
     public ResponseEntity<List<Account>> filterAccounts(@PathVariable String filter) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(findAllBy(filter));
+                .body(accountRepository.findAllByLoginContainsIgnoreCaseOrEmailContainsIgnoreCaseOrFirstNameContainsIgnoreCaseOrLastNameContainsIgnoreCase(filter, filter, filter, filter));
     }
 }

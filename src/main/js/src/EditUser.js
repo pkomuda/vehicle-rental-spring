@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
 import bcrypt from "bcryptjs";
-import { Button, Form, FormControl, FormGroup, FormLabel, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import { Form, FormControl, FormGroup, FormLabel, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import CenterButton from "./components/CenterButton";
 
 class EditUser extends React.Component {
 
@@ -16,7 +17,6 @@ class EditUser extends React.Component {
         };
         this.emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     }
-
 
     componentDidMount = () => {
         axios.get("/api/account/" + this.props.match.params.id)
@@ -198,11 +198,9 @@ class EditUser extends React.Component {
                             </div>
                         </FormGroup>
                         <hr/>
-                        <Button onClick={this.handleSubmit}>Submit</Button>
+                        <CenterButton onClick={this.handleSubmit} text="Submit"/>
                     </Form>
                 );
-            } else {
-                return <h2>{"User with login: " + this.props.match.params.id + " not found"}</h2>
             }
         }
     };
@@ -213,7 +211,7 @@ class EditUser extends React.Component {
                 <h1>Edit user</h1>
                 <hr/>
                 {this.renderForm()}
-                <Button style={{marginTop: "1em"}} onClick={this.props.history.goBack}>Back</Button>
+                <CenterButton back onClick={this.props.history.goBack} text="Back"/>
             </div>
         );
     }

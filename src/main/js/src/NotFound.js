@@ -1,13 +1,13 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import CenterButton from "./components/CenterButton";
 
 class NotFound extends React.Component {
 
     render() {
         return (
             <div>
-                <h1>Page not found</h1>
-                <Button style={{marginTop: "1em"}} onClick={this.props.history.goBack}>Back</Button>
+                <h1 style={{textAlign: "center"}}>Page not found</h1>
+                <CenterButton back onClick={this.props.history.goBack} text="Back"/>
             </div>
         )
     }
