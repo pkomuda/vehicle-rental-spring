@@ -4,31 +4,62 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.vehiclerental.model.Account;
+import pl.lodz.p.it.vehiclerental.model.AuthRequest;
+import pl.lodz.p.it.vehiclerental.model.AuthResponse;
 import pl.lodz.p.it.vehiclerental.repositories.AccountRepository;
+import pl.lodz.p.it.vehiclerental.services.JwtService;
+import pl.lodz.p.it.vehiclerental.services.MongoUserDetailsService;
 
-import java.util.List;
+import java.util.Arrays;
 
 @CrossOrigin
 @RestController
-public class AccountController {
+public class AuthController {
 
+    private AuthenticationManager authManager;
+    private MongoUserDetailsService userDetailsService;
+    private JwtService jwtService;
     private AccountRepository accountRepo;
     private PasswordEncoder bCrypt;
 
     @Autowired
-    public AccountController(AccountRepository accountRepo, PasswordEncoder bCrypt) {
+    public AuthController(AuthenticationManager authManager, MongoUserDetailsService userDetailsService, JwtService jwtService, AccountRepository accountRepo, PasswordEncoder bCrypt) {
+        this.authManager = authManager;
+        this.userDetailsService = userDetailsService;
+        this.jwtService = jwtService;
         this.accountRepo = accountRepo;
         this.bCrypt = bCrypt;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/account")
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+        try {
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword())
+            );
+        } catch (BadCredentialsException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Incorrect credentials.");
+        }
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getLogin());
+        final String jwt = jwtService.generateToken(userDetails);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new AuthResponse(jwt));
+    }
+
+    @PostMapping("/register")
     @Transactional
-    public ResponseEntity<String> addAccount(@RequestBody Account account) {
+    public ResponseEntity<String> register(@RequestBody Account account) {
         if (accountRepo.findById(account.getLogin()).isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -38,40 +69,19 @@ public class AccountController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body("User with email: " + account.getEmail() + " already exists.");
         } else {
+            if (!Arrays.equals(account.getPermissions(), new String[]{"CLIENT"})) {
+                account.setPermissions(new String[]{"CLIENT"});
+            }
             account.setPassword(bCrypt.encode(account.getPassword()));
             accountRepo.insert(account);
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body("User with login: " + account.getLogin() + " added successfully.");
+                    .body("Registered successfully.");
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or #login == authentication.principal.username")
-    @GetMapping("/account/{login}")
-    @Transactional
-    public ResponseEntity<?> getAccount(@PathVariable String login) {
-        if (accountRepo.findById(login).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(accountRepo.findById(login));
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User with login: " + login + " not found.");
-        }
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/accounts")
-    @Transactional
-    public ResponseEntity<List<Account>> getAccounts() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(accountRepo.findAll());
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/account/{login}")
+    @PreAuthorize("#login == authentication.principal.username")
+    @PutMapping("/editprofile/{login}")
     @Transactional
     public ResponseEntity<String> updateAccount(@PathVariable String login, @RequestBody Account account) {
         if (accountRepo.findById(login).isPresent()) {
@@ -88,6 +98,9 @@ public class AccountController {
                 if (!login.equals(account.getLogin())) {
                     accountRepo.deleteById(login);
                 }
+                if (!Arrays.equals(account.getPermissions(), new String[]{"CLIENT"})) {
+                    account.setPermissions(new String[]{"CLIENT"});
+                }
                 account.setPassword(bCrypt.encode(account.getPassword()));
                 accountRepo.save(account);
                 return ResponseEntity
@@ -99,30 +112,5 @@ public class AccountController {
                     .status(HttpStatus.NOT_FOUND)
                     .body("User with login: " + login + " not found.");
         }
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN') or #login == authentication.principal.username")
-    @DeleteMapping("/account/{login}")
-    @Transactional
-    public ResponseEntity<String> deleteAccount(@PathVariable String login) {
-        if (accountRepo.findById(login).isPresent()) {
-            accountRepo.deleteById(login);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("User with login: " + login + " deleted successfully.");
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User with login: " + login + " not found.");
-        }
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/accounts/{filter}")
-    @Transactional
-    public ResponseEntity<List<Account>> filterAccounts(@PathVariable String filter) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(accountRepo.findAllByLoginContainsIgnoreCaseOrEmailContainsIgnoreCaseOrFirstNameContainsIgnoreCaseOrLastNameContainsIgnoreCase(filter, filter, filter, filter));
     }
 }
