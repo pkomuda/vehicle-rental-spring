@@ -1,7 +1,7 @@
-package pl.lodz.p.it.vehiclerental.repositories;
+package pl.lodz.p.it.vehiclerentalspring.repositories;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import pl.lodz.p.it.vehiclerental.model.Account;
+import pl.lodz.p.it.vehiclerentalspring.model.Account;
 
 import java.util.List;
 import java.util.Optional;

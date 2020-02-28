@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental.controllers;
+package pl.lodz.p.it.vehiclerentalspring.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -7,9 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import pl.lodz.p.it.vehiclerental.model.Account;
-import pl.lodz.p.it.vehiclerental.repositories.AccountRepository;
+import pl.lodz.p.it.vehiclerentalspring.model.Account;
+import pl.lodz.p.it.vehiclerentalspring.repositories.AccountRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin
@@ -87,6 +88,40 @@ public class AccountController {
             } else {
                 if (!login.equals(account.getLogin())) {
                     accountRepo.deleteById(login);
+                }
+                account.setPassword(bCrypt.encode(account.getPassword()));
+                accountRepo.save(account);
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body("User with login: " + login + " updated successfully.");
+            }
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("User with login: " + login + " not found.");
+        }
+    }
+
+    @PreAuthorize("#login == authentication.principal.username")
+    @PutMapping("/editprofile/{login}")
+    @Transactional
+    public ResponseEntity<String> updateAccountNonAdmin(@PathVariable String login, @RequestBody Account account) {
+        if (accountRepo.findById(login).isPresent()) {
+            if (!login.equals(account.getLogin()) && accountRepo.findById(account.getLogin()).isPresent()) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("User with login: " + account.getLogin() + " already exists.");
+            } else if (accountRepo.findByEmail(account.getEmail()).isPresent()
+                    && !accountRepo.findById(login).get().getEmail().equals(account.getEmail())) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("User with email: " + account.getEmail() + " already exists.");
+            } else {
+                if (!login.equals(account.getLogin())) {
+                    accountRepo.deleteById(login);
+                }
+                if (!Arrays.equals(account.getPermissions(), new String[]{"CLIENT"})) {
+                    account.setPermissions(new String[]{"CLIENT"});
                 }
                 account.setPassword(bCrypt.encode(account.getPassword()));
                 accountRepo.save(account);

@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental.services;
+package pl.lodz.p.it.vehiclerentalspring.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

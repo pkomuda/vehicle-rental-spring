@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental.config;
+package pl.lodz.p.it.vehiclerentalspring.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pl.lodz.p.it.vehiclerental.JwtRequestFilter;
-import pl.lodz.p.it.vehiclerental.services.MongoUserDetailsService;
+import pl.lodz.p.it.vehiclerentalspring.JwtRequestFilter;
+import pl.lodz.p.it.vehiclerentalspring.services.MongoUserDetailsService;
 
 @Configuration
 @EnableWebSecurity

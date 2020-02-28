@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental.config;
+package pl.lodz.p.it.vehiclerentalspring.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;

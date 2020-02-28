@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental.model;
+package pl.lodz.p.it.vehiclerentalspring.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

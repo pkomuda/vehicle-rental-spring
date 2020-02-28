@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental.config;
+package pl.lodz.p.it.vehiclerentalspring.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

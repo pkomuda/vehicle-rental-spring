@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental.services;
+package pl.lodz.p.it.vehiclerentalspring.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.it.vehiclerental.model.Account;
-import pl.lodz.p.it.vehiclerental.repositories.AccountRepository;
+import pl.lodz.p.it.vehiclerentalspring.model.Account;
+import pl.lodz.p.it.vehiclerentalspring.repositories.AccountRepository;
 
 import java.util.Arrays;
 import java.util.List;
