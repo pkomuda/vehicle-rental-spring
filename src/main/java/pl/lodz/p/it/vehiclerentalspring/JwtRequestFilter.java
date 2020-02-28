@@ -1,4 +1,4 @@
-package pl.lodz.p.it.vehiclerental;
+package pl.lodz.p.it.vehiclerentalspring;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import pl.lodz.p.it.vehiclerental.services.JwtService;
-import pl.lodz.p.it.vehiclerental.services.MongoUserDetailsService;
+import pl.lodz.p.it.vehiclerentalspring.services.JwtService;
+import pl.lodz.p.it.vehiclerentalspring.services.MongoUserDetailsService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
