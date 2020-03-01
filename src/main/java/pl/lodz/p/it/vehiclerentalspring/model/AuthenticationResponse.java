@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @AllArgsConstructor
-public @Data class AuthResponse implements Serializable {
+public @Data class AuthenticationResponse implements Serializable {
 
     private final String jwt;
 }

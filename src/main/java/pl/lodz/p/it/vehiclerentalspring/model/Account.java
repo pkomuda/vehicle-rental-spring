@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public @Data class Account {
 
     @Id
-    private String login;
+    private String username;
     private String password;
     private String email;
     private String firstName;

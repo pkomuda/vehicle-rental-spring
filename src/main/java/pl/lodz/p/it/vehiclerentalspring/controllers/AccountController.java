@@ -4,160 +4,83 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.vehiclerentalspring.model.Account;
-import pl.lodz.p.it.vehiclerentalspring.repositories.AccountRepository;
+import pl.lodz.p.it.vehiclerentalspring.services.interfaces.AccountService;
 
-import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin
 @RestController
 public class AccountController {
 
-    private AccountRepository accountRepo;
-    private PasswordEncoder bCrypt;
+    private AccountService accountService;
 
     @Autowired
-    public AccountController(AccountRepository accountRepo, PasswordEncoder bCrypt) {
-        this.accountRepo = accountRepo;
-        this.bCrypt = bCrypt;
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/account")
-    @Transactional
-    public ResponseEntity<String> addAccount(@RequestBody Account account) {
-        if (accountRepo.findById(account.getLogin()).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("User with login: " + account.getLogin() + " already exists.");
-        } else if (accountRepo.findByEmail(account.getEmail()).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("User with email: " + account.getEmail() + " already exists.");
-        } else {
-            account.setPassword(bCrypt.encode(account.getPassword()));
-            accountRepo.insert(account);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("User with login: " + account.getLogin() + " added successfully.");
-        }
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN') or #login == authentication.principal.username")
-    @GetMapping("/account/{login}")
-    @Transactional
-    public ResponseEntity<?> getAccount(@PathVariable String login) {
-        if (accountRepo.findById(login).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(accountRepo.findById(login));
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User with login: " + login + " not found.");
-        }
-    }
-
     @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<String> addAccount(@RequestBody Account account) throws Exception {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountService.addAccount(account, true));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> addAccountNonAdmin(@RequestBody Account account) throws Exception {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountService.addAccount(account, false));
+    }
+
+    @GetMapping("/account/{username}")
+    @PreAuthorize("hasAuthority('ADMIN') or #username == authentication.principal.username")
+    public ResponseEntity<?> getAccount(@PathVariable String username) throws Exception {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountService.getAccount(username));
+    }
+
+    @PutMapping("/account/{username}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<String> updateAccount(@PathVariable String username, @RequestBody Account account) throws Exception {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountService.updateAccount(username, account, true));
+    }
+
+    @PutMapping("/editprofile/{username}")
+    @PreAuthorize("#username == authentication.principal.username")
+    public ResponseEntity<String> updateAccountNonAdmin(@PathVariable String username, @RequestBody Account account) throws Exception {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountService.updateAccount(username, account, false));
+    }
+
+    @DeleteMapping("/account/{username}")
+    @PreAuthorize("hasAuthority('ADMIN') or #username == authentication.principal.username")
+    public ResponseEntity<String> deleteAccount(@PathVariable String username) throws Exception {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountService.deleteAccount(username));
+    }
+
     @GetMapping("/accounts")
-    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Account>> getAccounts() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(accountRepo.findAll());
+                .body(accountService.getAccounts());
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/account/{login}")
-    @Transactional
-    public ResponseEntity<String> updateAccount(@PathVariable String login, @RequestBody Account account) {
-        if (accountRepo.findById(login).isPresent()) {
-            if (!login.equals(account.getLogin()) && accountRepo.findById(account.getLogin()).isPresent()) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body("User with login: " + account.getLogin() + " already exists.");
-            } else if (accountRepo.findByEmail(account.getEmail()).isPresent()
-                    && !accountRepo.findById(login).get().getEmail().equals(account.getEmail())) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body("User with email: " + account.getEmail() + " already exists.");
-            } else {
-                if (!login.equals(account.getLogin())) {
-                    accountRepo.deleteById(login);
-                }
-                account.setPassword(bCrypt.encode(account.getPassword()));
-                accountRepo.save(account);
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body("User with login: " + login + " updated successfully.");
-            }
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User with login: " + login + " not found.");
-        }
-    }
-
-    @PreAuthorize("#login == authentication.principal.username")
-    @PutMapping("/editprofile/{login}")
-    @Transactional
-    public ResponseEntity<String> updateAccountNonAdmin(@PathVariable String login, @RequestBody Account account) {
-        if (accountRepo.findById(login).isPresent()) {
-            if (!login.equals(account.getLogin()) && accountRepo.findById(account.getLogin()).isPresent()) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body("User with login: " + account.getLogin() + " already exists.");
-            } else if (accountRepo.findByEmail(account.getEmail()).isPresent()
-                    && !accountRepo.findById(login).get().getEmail().equals(account.getEmail())) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body("User with email: " + account.getEmail() + " already exists.");
-            } else {
-                if (!login.equals(account.getLogin())) {
-                    accountRepo.deleteById(login);
-                }
-                if (!Arrays.equals(account.getPermissions(), new String[]{"CLIENT"})) {
-                    account.setPermissions(new String[]{"CLIENT"});
-                }
-                account.setPassword(bCrypt.encode(account.getPassword()));
-                accountRepo.save(account);
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body("User with login: " + login + " updated successfully.");
-            }
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User with login: " + login + " not found.");
-        }
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN') or #login == authentication.principal.username")
-    @DeleteMapping("/account/{login}")
-    @Transactional
-    public ResponseEntity<String> deleteAccount(@PathVariable String login) {
-        if (accountRepo.findById(login).isPresent()) {
-            accountRepo.deleteById(login);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("User with login: " + login + " deleted successfully.");
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User with login: " + login + " not found.");
-        }
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/accounts/{filter}")
-    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Account>> filterAccounts(@PathVariable String filter) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(accountRepo.findAllByLoginContainsIgnoreCaseOrEmailContainsIgnoreCaseOrFirstNameContainsIgnoreCaseOrLastNameContainsIgnoreCase(filter, filter, filter, filter));
+                .body(accountService.filterAccounts(filter));
     }
 }

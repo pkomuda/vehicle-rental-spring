@@ -6,8 +6,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 @AllArgsConstructor
-public @Data class AuthRequest implements Serializable {
+public @Data class AuthenticationRequest implements Serializable {
 
-    private String login;
+    private String username;
     private String password;
 }

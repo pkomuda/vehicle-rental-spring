@@ -25,15 +25,15 @@ public class MongoUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String loginOrEmail) throws UsernameNotFoundException {
-        if (accountRepo.findByLoginOrEmail(loginOrEmail, loginOrEmail).isEmpty()) {
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        if (accountRepo.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).isEmpty()) {
             throw new UsernameNotFoundException("User not found.");
         } else {
-            Account account = accountRepo.findByLoginOrEmail(loginOrEmail, loginOrEmail).get();
+            Account account = accountRepo.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).get();
             List<SimpleGrantedAuthority> authorities = Arrays.stream(account.getPermissions())
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
-            return new User(account.getLogin(), account.getPassword(), authorities);
+            return new User(account.getUsername(), account.getPassword(), authorities);
         }
     }
 }
