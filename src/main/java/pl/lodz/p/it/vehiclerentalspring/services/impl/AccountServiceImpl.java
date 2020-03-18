@@ -51,21 +51,19 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Account getAccount(String username) throws NoSuchItemException {
-        if (accountRepo.findById(username).isPresent()) {
-            return accountRepo.findById(username).get();
+    public Account getAccount(String username, boolean byEmail) throws NoSuchItemException {
+        if (byEmail) {
+            if (accountRepo.findByUsernameOrEmail(username, username).isPresent()) {
+                return accountRepo.findByUsernameOrEmail(username, username).get();
+            } else {
+                throw new NoSuchItemException("User " + username + " not found.");
+            }
         } else {
-            throw new NoSuchItemException("User " + username + " not found.");
-        }
-    }
-
-    @Override
-    @Transactional
-    public Account getAccountByUsernameOrEmail(String usernameOrEmail) throws NoSuchItemException {
-        if (accountRepo.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).isPresent()) {
-            return accountRepo.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).get();
-        } else {
-            throw new NoSuchItemException("User " + usernameOrEmail + " not found.");
+            if (accountRepo.findById(username).isPresent()) {
+                return accountRepo.findById(username).get();
+            } else {
+                throw new NoSuchItemException("User " + username + " not found.");
+            }
         }
     }
 
@@ -79,14 +77,16 @@ public class AccountServiceImpl implements AccountService {
                     && !accountRepo.findById(username).get().getEmail().equals(account.getEmail())) {
                 throw new DuplicateItemException("User with email: " + account.getEmail() + " already exists.");
             } else {
-                if (!username.equals(account.getUsername())) {
-                    accountRepo.deleteById(username);
+                if (account.getPassword() != null) {
+                    account.setPassword(bCrypt.encode(account.getPassword()));
+                } else {
+                    account.setPassword(bCrypt.encode(accountRepo.findById(username).get().getPassword()));
                 }
-//                if (account.getPassword() != null) {
-//                    account.setPassword(bCrypt.encode(account.getPassword()));
-//                }
                 if (!isAdmin && !Arrays.equals(account.getPermissions(), new String[]{"CLIENT"})) {
                     account.setPermissions(new String[]{"CLIENT"});
+                }
+                if (!username.equals(account.getUsername())) {
+                    accountRepo.deleteById(username);
                 }
                 accountRepo.save(account);
                 return "User " + username + " updated successfully.";

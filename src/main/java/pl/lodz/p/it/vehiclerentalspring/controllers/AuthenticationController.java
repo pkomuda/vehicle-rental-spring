@@ -40,7 +40,7 @@ public class AuthenticationController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Incorrect credentials.");
         }
-        if (!accountService.getAccountByUsernameOrEmail(authRequest.getUsername()).isActive()) {
+        if (!accountService.getAccount(authRequest.getUsername(), true).isActive()) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("This account is inactive.");

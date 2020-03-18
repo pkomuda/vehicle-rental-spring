@@ -41,7 +41,7 @@ public class AccountController {
     public ResponseEntity<?> getAccount(@PathVariable String username) throws Exception {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(accountService.getAccount(username));
+                .body(accountService.getAccount(username, false));
     }
 
     @PutMapping("/account/{username}")
